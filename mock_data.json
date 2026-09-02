@@ -1,0 +1,20 @@
+{
+  "calendar": [
+    { "id": 1, "title": "Project Sync Meeting", "time": "12:00 PM", "duration_min": 60, "priority": "MEDIUM" }
+  ],
+  "emails": [
+    { "id": 101, "subject": "Interview Details - Tech Corp", "body": "Your interview is at 2:00 PM tomorrow in Indiranagar, Bangalore." }
+  ],
+  "tasks": [
+    { "id": 501, "task": "Submit Systems Design Assignment", "due": "Tomorrow 11:59 PM", "status": "PENDING" }
+  ],
+  "maps": {
+    "origin": "Koramangala",
+    "destination": "Indiranagar",
+    "normal_travel_time_min": 45
+  },
+  "weather": {
+    "forecast": "Heavy Rain",
+    "travel_delay_multiplier": 2.0
+  }
+}

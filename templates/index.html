@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Adaptive Context Orchestrator (ACO)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-6">
+    <header class="mb-6 border-b border-slate-700 pb-4 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-indigo-400">Adaptive Context Orchestrator (ACO)</h1>
+            <p class="text-sm text-slate-400">Context-Aware AI Decision Engine Prototype</p>
+        </div>
+        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-mono">System Active</span>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left Column: User Interface -->
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 flex flex-col justify-between h-[650px]">
+            <div>
+                <h2 class="text-lg font-semibold mb-4 text-slate-200">User Interface</h2>
+                <div id="chat-box" class="space-y-4 overflow-y-auto max-h-[480px] pr-2">
+                    <div class="bg-slate-700/50 p-3 rounded-lg text-sm text-slate-300">
+                        <strong>Assistant:</strong> Ready. Try inputting: <em>"I have an interview tomorrow. Make sure I'm ready."</em>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 flex gap-2">
+                <input id="user-input" type="text" value="I have an interview tomorrow. Make sure I'm ready." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-slate-100">
+                <button onclick="runOrchestrator()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-5 py-2 rounded-lg text-sm transition">Run Orchestration</button>
+            </div>
+        </div>
+
+        <!-- Right Column: Judge/Debug View -->
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 h-[650px] overflow-y-auto">
+            <h2 class="text-lg font-semibold mb-1 text-slate-200">Decision & Trust Engine Log</h2>
+            <p class="text-xs text-slate-400 mb-4">Real-time reasoning graph, context resolution, and action routing</p>
+            <div id="trace-log" class="space-y-3 font-mono text-xs">
+                <div class="text-slate-500 italic">Awaiting pipeline execution...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function runOrchestrator() {
+            const input = document.getElementById('user-input').value;
+            const chatBox = document.getElementById('chat-box');
+            const traceLog = document.getElementById('trace-log');
+
+            // Add User Message
+            chatBox.innerHTML += `<div class="bg-indigo-900/40 border border-indigo-700/50 p-3 rounded-lg text-sm text-indigo-200 text-right"><strong>You:</strong> ${input}</div>`;
+
+            // Clear Log
+            traceLog.innerHTML = `<div class="text-indigo-400 animate-pulse">Running Layer 1 to 5 Decision Engine...</div>`;
+
+            const res = await fetch('/api/process', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: input})
+            });
+            const data = await res.json();
+
+            // Populate Trace Log (Judge View)
+            traceLog.innerHTML = '';
+            data.trace.forEach(step => {
+                traceLog.innerHTML += `
+                    <div class="bg-slate-900 border border-slate-700 p-3 rounded-lg">
+                        <div class="text-indigo-400 font-bold mb-1">${step.layer}</div>
+                        <div class="text-slate-300">${step.detail}</div>
+                    </div>
+                `;
+            });
+
+            // Populate Action Plan (User View)
+            let actionsHTML = `<div class="bg-slate-700/50 p-4 rounded-lg text-sm space-y-3">
+                <div class="font-bold text-slate-200">Generated Action Plan:</div>`;
+            
+            data.recommended_actions.forEach(act => {
+                const badgeColor = act.trust_level === 'LEVEL_1_AUTO' 
+                    ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' 
+                    : 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+                
+                actionsHTML += `
+                    <div class="bg-slate-800 p-3 rounded border border-slate-600/50">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-semibold text-slate-200">${act.action}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded border ${badgeColor}">${act.trust_level}</span>
+                        </div>
+                        <div class="text-xs text-slate-400"><strong>Reason:</strong> ${act.reason} (Confidence: ${act.confidence})</div>
+                    </div>
+                `;
+            });
+            actionsHTML += `</div>`;
+            chatBox.innerHTML += actionsHTML;
+        }
+    </script>
+</body>
+</html>
