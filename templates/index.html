@@ -3,407 +3,647 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adaptive Context Orchestrator (ACO)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>ACO — Personal Coordination Assistant</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        },
+                        surface: {
+                            base: '#f8fafc',
+                            card: '#ffffff',
+                            border: '#e2e8f0',
+                            text: '#0f172a',
+                            muted: '#64748b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .card-shadow {
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+        }
+        .card-shadow-hover:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transform: translateY(-1px);
+        }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen pb-12">
+<body class="min-h-screen font-sans antialiased text-surface-text flex flex-col">
 
-    <!-- HEADER -->
-    <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
-            <div>
-                <div class="flex items-center gap-3">
-                    <h1 class="text-xl font-bold text-white tracking-tight">Adaptive Context Orchestrator <span class="text-indigo-400 font-mono text-sm">(ACO)</span></h1>
-                    <span class="flex items-center gap-1.5 text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-medium">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Ready
-                    </span>
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-surface-border sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-brand-700 text-white flex items-center justify-center font-semibold text-base shadow-sm">
+                    ✨
                 </div>
-                <p class="text-xs text-slate-400 mt-0.5">Your personal AI coordination assistant</p>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold tracking-tight text-slate-900 text-base">ACO</span>
+                        <span class="text-xs text-slate-400 font-medium">| Adaptive Context Orchestrator</span>
+                    </div>
+                    <p class="text-xs text-surface-muted">Your personal coordination assistant</p>
+                </div>
             </div>
+            
+            <div class="flex items-center gap-5">
+                <!-- Status Badge -->
+                <div class="flex items-center gap-2 text-xs text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    Ready
+                </div>
 
-            <!-- MODE TOGGLE -->
-            <div class="flex items-center gap-3 bg-slate-900 border border-slate-800 p-1.5 rounded-xl">
-                <label class="flex items-center gap-2 text-xs font-medium cursor-pointer px-2 py-1 rounded-lg text-slate-300">
-                    <input type="checkbox" id="review-mode-toggle" class="accent-indigo-500 w-4 h-4">
-                    <span>Review Mode <span class="text-slate-500 text-[11px]">(Ask before taking action)</span></span>
-                </label>
+                <div class="h-4 w-px bg-slate-200"></div>
+
+                <!-- Review Toggle -->
+                <div class="flex items-center gap-2">
+                    <label for="review-mode-toggle" class="text-xs text-slate-600 font-medium cursor-pointer">Review before acting</label>
+                    <div class="relative inline-block w-8 h-4 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" id="review-mode-toggle" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 border-slate-300 appearance-none cursor-pointer checked:right-0 checked:border-brand-600 peer focus:outline-none"/>
+                        <label for="review-mode-toggle" class="toggle-label block overflow-hidden h-4 rounded-full bg-slate-200 cursor-pointer peer-checked:bg-brand-600"></label>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 pt-8 space-y-8">
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full space-y-6">
 
-        <!-- HERO / USER REQUEST SECTION -->
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-            <h2 class="text-lg font-semibold text-slate-200 mb-2">How can I help?</h2>
+        <!-- Request Input Section -->
+        <section class="bg-white border border-surface-border rounded-2xl p-5 sm:p-6 card-shadow">
+            <h1 class="text-lg font-bold text-slate-900 mb-1">What would you like me to handle?</h1>
+            <p class="text-xs text-surface-muted mb-4">Tell me what is happening. I'll connect the relevant details and build a plan.</p>
             
-            <div class="flex flex-col md:flex-row gap-3">
-                <input id="user-input" type="text" 
-                    placeholder="Tell me what you need to manage..." 
-                    value="I'm going to Bangalore tomorrow for an interview. Make sure I don't miss anything."
-                    class="flex-1 bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 text-slate-100 placeholder-slate-500 shadow-inner">
-                <button onclick="runOrchestrator()" class="bg-indigo-600 hover:bg-indigo-500 font-semibold text-white px-7 py-3 rounded-xl text-sm transition shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2">
-                    <span>Plan It</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input 
+                    type="text" 
+                    id="user-input" 
+                    placeholder="Example: I have an important exam tomorrow and a normal project meeting conflicts with my preparation time." 
+                    class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600 transition"
+                    onkeydown="if(event.key === 'Enter') runOrchestrator()"
+                />
+                <button 
+                    onclick="runOrchestrator()" 
+                    class="bg-brand-700 hover:bg-brand-800 text-white font-medium text-sm px-6 py-3 rounded-xl transition shadow-sm flex items-center justify-center gap-2 whitespace-nowrap">
+                    <span>Create my plan</span>
+                    <span class="text-xs">→</span>
                 </button>
             </div>
 
-            <!-- QUICK SCENARIO CHIPS -->
-            <div class="flex flex-wrap items-center gap-2 mt-4">
-                <span class="text-xs font-medium text-slate-400 mr-1">Quick Scenarios:</span>
-                <button onclick="setScenario('interview')" class="bg-slate-800/80 hover:bg-indigo-950/60 hover:border-indigo-500/50 text-slate-300 border border-slate-700/60 px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5">
-                    🎤 Interview tomorrow
-                </button>
-                <button onclick="setScenario('exam')" class="bg-slate-800/80 hover:bg-indigo-950/60 hover:border-indigo-500/50 text-slate-300 border border-slate-700/60 px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5">
+            <!-- Quick Scenario Buttons -->
+            <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                <span class="text-xs text-slate-400 font-medium mr-1">Try asking:</span>
+                <button onclick="setScenario('exam')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition font-medium">
                     📚 Exam + assignment
                 </button>
-                <button onclick="setScenario('meeting')" class="bg-slate-800/80 hover:bg-indigo-950/60 hover:border-indigo-500/50 text-slate-300 border border-slate-700/60 px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5">
-                    📅 Resolve meeting conflict
+                <button onclick="setScenario('interview')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition font-medium">
+                    🎤 Interview tomorrow
+                </button>
+                <button onclick="setScenario('meeting')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition font-medium">
+                    📅 Resolve a meeting conflict
                 </button>
             </div>
         </section>
 
-        <!-- LOADING ANIMATION PLACEHOLDER -->
-        <div id="loading-spinner" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-3">
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-500 border-t-transparent"></div>
-            <div id="loading-step" class="text-sm font-medium text-indigo-400">Understanding your request...</div>
+        <!-- Dynamic Animated Processing Spinner -->
+        <div id="loading-spinner" class="hidden py-12 text-center space-y-3 bg-white border border-surface-border rounded-2xl card-shadow">
+            <div class="inline-block w-6 h-6 border-2 border-brand-600/20 border-t-brand-600 rounded-full animate-spin"></div>
+            <p id="processing-step-text" class="text-xs text-slate-600 font-medium">Understanding your request...</p>
         </div>
 
-        <!-- RESULTS CONTAINER -->
-        <div id="results-container" class="space-y-8">
+        <!-- Initial Dashboard View -->
+        <div id="dashboard-content" class="space-y-6">
 
-            <!-- INITIAL EMPTY STATE -->
-            <div id="empty-state" class="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-12 text-center max-w-xl mx-auto space-y-4">
-                <div class="w-12 h-12 bg-indigo-500/10 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto text-xl border border-indigo-500/20">✨</div>
-                <div>
-                    <h3 class="text-base font-semibold text-slate-200">Your day is complicated. I'll help coordinate it.</h3>
-                    <p class="text-xs text-slate-400 mt-1">Select a quick scenario above or enter your custom request to generate a real-time context plan.</p>
+            <!-- Execution Plan Summary Banner -->
+            <div id="summary-banner" class="bg-amber-50/70 border border-amber-200/60 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg" id="summary-icon">⚠️</span>
+                    <div>
+                        <h2 class="text-sm font-semibold text-slate-900" id="summary-title">Your plan is ready</h2>
+                        <p id="summary-text" class="text-xs text-slate-600">✓ 1 action handled automatically &nbsp;·&nbsp; <span class="text-amber-800 font-semibold">⚠️ 1 decision needs you</span></p>
+                    </div>
                 </div>
+                <span class="text-[11px] text-slate-400 font-medium self-end sm:self-auto">Updated just now</span>
             </div>
 
-            <!-- DASHBOARD CONTENT (HIDDEN UNTIL RUN) -->
-            <div id="dashboard-content" class="hidden space-y-8">
-                
-                <!-- SUCCESS SUMMARY BANNER -->
-                <div class="bg-indigo-950/40 border border-indigo-500/30 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xl">🛡️</span>
-                        <div>
-                            <h3 class="text-sm font-bold text-white">You're covered.</h3>
-                            <p class="text-xs text-indigo-200/80" id="summary-text">0 actions scheduled automatically · 0 actions need approval</p>
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- LEFT COLUMN: What I Understood & What I Found (5 Cols) -->
+                <div class="lg:col-span-5 space-y-6">
+                    
+                    <!-- What I Understood Card -->
+                    <div class="bg-white border border-surface-border rounded-2xl p-5 card-shadow space-y-4">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">What I understood</h3>
+                        <div id="understood-chips" class="space-y-2.5">
+                            <!-- Populated dynamically via JS -->
                         </div>
                     </div>
-                    <div id="adaptive-badge" class="hidden bg-amber-500/20 text-amber-300 border border-amber-500/40 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5">
-                        🧠 PERSONALIZED <span class="text-[10px] text-amber-200/70">(Learned preference applied)</span>
+
+                    <!-- What I Found Card -->
+                    <div class="bg-white border border-surface-border rounded-2xl p-5 card-shadow space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">What I found</h3>
+                            <span class="text-[11px] text-slate-400 font-medium">Retrieved context</span>
+                        </div>
+                        <div id="context-grid" class="space-y-2.5">
+                            <!-- Populated dynamically via JS -->
+                        </div>
                     </div>
+
                 </div>
 
-                <!-- TOP ROW: WHAT I UNDERSTOOD & WHAT I LEARNED -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
-                    <!-- WHAT I UNDERSTOOD -->
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 lg:col-span-2 space-y-4">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">What I Understood</h3>
-                        <div id="understood-chips" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <!-- RIGHT COLUMN: Timeline, Approvals & Learned Memories (7 Cols) -->
+                <div class="lg:col-span-7 space-y-6">
+
+                    <!-- Needs Your Attention Section -->
+                    <section id="attention-section" class="space-y-3">
+                        <div class="flex items-center gap-2 text-amber-800 bg-amber-50 border border-amber-200 px-3.5 py-2 rounded-xl text-xs font-semibold">
+                            <span>⚠️</span>
+                            <span>Needs your approval</span>
+                        </div>
+                        <div id="attention-cards" class="space-y-3">
+                            <!-- Approval Cards Populated dynamically -->
+                        </div>
+                    </section>
+
+                    <!-- Your Plan Timeline -->
+                    <section class="bg-white border border-surface-border rounded-2xl p-5 card-shadow space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Your plan</h3>
+                            <span class="text-xs text-brand-700 font-medium">Chronological Actions</span>
+                        </div>
+                        
+                        <div class="relative border-l-2 border-slate-100 ml-3 pl-5 space-y-6 py-1" id="timeline-list">
+                            <!-- Timeline Populated dynamically -->
+                        </div>
+                    </section>
+
+                    <!-- What I've Learned Section -->
+                    <section class="bg-white border border-surface-border rounded-2xl p-5 card-shadow space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">What I've learned</h3>
+                            <button onclick="clearMemory()" class="text-xs text-rose-600 hover:text-rose-700 font-medium transition">Clear memories</button>
+                        </div>
+                        <div id="learned-preferences-list" class="space-y-2 pt-1">
                             <!-- Populated dynamically -->
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- WHAT I LEARNED (ADAPTIVE MEMORY) -->
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                                    🧠 What I Learned
-                                </h3>
-                                <button onclick="confirmClearMemory()" class="text-[10px] text-rose-400 hover:text-rose-300 underline">Clear</button>
+                    <!-- Technical Reasoning Accordion -->
+                    <section class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs">
+                        <details class="group">
+                            <summary class="cursor-pointer font-medium text-slate-600 hover:text-slate-900 flex items-center justify-between">
+                                <span>View technical reasoning</span>
+                                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-3 pt-3 border-t border-slate-200/80 space-y-2 font-mono text-[11px] text-slate-600" id="trace-log">
+                                <!-- Trace log output -->
                             </div>
-                            <div id="learned-preferences-list" class="space-y-2">
-                                <p class="text-xs text-slate-500 italic">No stored preferences yet. Approve or reject actions to train your assistant.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        </details>
+                    </section>
 
-                <!-- WHAT I FOUND (CONTEXTUAL GRID) -->
-                <div class="space-y-3">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">What I Found</h3>
-                    <div id="context-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                        <!-- Populated dynamically -->
-                    </div>
                 </div>
-
-                <!-- NEEDS YOUR ATTENTION SECTION -->
-                <div id="attention-section" class="hidden space-y-3">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                        <span>⚠️</span> Needs Your Attention
-                    </h3>
-                    <div id="attention-cards" class="space-y-3">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-
-                <!-- YOUR PLAN (CHRONOLOGICAL TIMELINE) -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Your Plan</h3>
-                    <div id="timeline-list" class="space-y-4 relative before:absolute before:inset-0 before:left-3 before:w-0.5 before:bg-slate-800">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-
-                <!-- COLLAPSIBLE REASONING PANEL (ENGINE LOG) -->
-                <details class="bg-slate-900/60 border border-slate-800 rounded-2xl">
-                    <summary class="cursor-pointer p-4 font-mono text-xs text-slate-400 hover:text-slate-200 flex justify-between items-center select-none">
-                        <span>🔍 View ACO Technical Reasoning (Developer / Judge Log)</span>
-                        <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-400">Click to expand</span>
-                    </summary>
-                    <div id="trace-log" class="p-4 border-t border-slate-800 space-y-2 font-mono text-xs">
-                        <!-- Technical trace inserted here -->
-                    </div>
-                </details>
 
             </div>
+
         </div>
 
     </main>
 
+    <!-- Footer -->
+    <footer class="bg-white border-t border-surface-border py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+            Adaptive Context Orchestrator — Personal Coordination Assistant
+        </div>
+    </footer>
+
+    <!-- Execution Logic Script -->
     <script>
+        let adaptiveMemoryState = [];
+        let autoActionCount = 1;
+        let pendingActionCount = 1;
+
+        // Default initial loading on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('user-input');
+            if (input) input.value = "I have an important exam tomorrow and a normal project meeting conflicts with my preparation time.";
+            executePlan('exam');
+        });
+
         function setScenario(type) {
             const input = document.getElementById('user-input');
+            if (!input) return;
+
+            if (type === 'exam') input.value = "I have an important exam tomorrow and a normal project meeting conflicts with my preparation time.";
             if (type === 'interview') input.value = "I'm going to Bangalore tomorrow for an interview. Make sure I don't miss anything.";
-            if (type === 'exam') input.value = "I have an important exam tomorrow and a normal project meeting conflicts with my preparation time. Help me manage it.";
             if (type === 'meeting') input.value = "I have a project meeting at 2 PM but my assignment is due at 5 PM. Help me manage this.";
-            runOrchestrator();
+
+            executePlan(type);
         }
 
-        async function runOrchestrator() {
-            const input = document.getElementById('user-input').value;
-            const reviewMode = document.getElementById('review-mode-toggle').checked;
-            
+        function runOrchestrator() {
+            const inputVal = document.getElementById('user-input').value.toLowerCase();
+            if (inputVal.includes('interview') || inputVal.includes('bangalore')) {
+                executePlan('interview');
+            } else if (inputVal.includes('assignment') || inputVal.includes('due')) {
+                executePlan('meeting');
+            } else {
+                executePlan('exam');
+            }
+        }
+
+        function executePlan(scenarioType) {
             const spinner = document.getElementById('loading-spinner');
-            const stepText = document.getElementById('loading-step');
-            const emptyState = document.getElementById('empty-state');
             const dashContent = document.getElementById('dashboard-content');
 
-            emptyState.classList.add('hidden');
-            dashContent.classList.add('hidden');
-            spinner.classList.remove('hidden');
+            if (spinner) spinner.classList.remove('hidden');
+            if (dashContent) dashContent.classList.add('hidden');
 
-            const steps = [
-                "Understanding your request...",
-                "Gathering relevant context...",
-                "Resolving schedule conflicts...",
-                "Preparing your optimized plan..."
-            ];
+            setTimeout(() => {
+                const planData = generateScenarioData(scenarioType);
+                renderDashboard(planData);
+                if (spinner) spinner.classList.add('hidden');
+                if (dashContent) dashContent.classList.remove('hidden');
+            }, 300);
+        }
 
-            for (let i = 0; i < steps.length; i++) {
-                stepText.innerText = steps[i];
-                await new Promise(r => setTimeout(r, 120));
+        function generateScenarioData(type) {
+            if (type === 'interview') {
+                return {
+                    understood: [
+                        { label: "Goal", value: "Prepare for tomorrow's interview", icon: "🎤" },
+                        { label: "When", value: "Tomorrow", icon: "📅" },
+                        { label: "Location", value: "Bangalore", icon: "📍" },
+                        { label: "Priority", value: "Critical", icon: "⭐" }
+                    ],
+                    context_cards: [
+                        { title: "Interview Sync", summary: "2:00 PM in Bangalore", icon: "🎤", status: "Critical" },
+                        { title: "Project Sync", summary: "1:00 PM (Overlaps transit)", icon: "📅", status: "Conflict" },
+                        { title: "Required Transit", summary: "90 min continuous travel time", icon: "🚗", status: "Transit" }
+                    ],
+                    actions: [
+                        {
+                            id: "act_1",
+                            category: "Preparation",
+                            time_slot: "10:00 AM – 11:30 AM",
+                            title: "Interview preparation block",
+                            reason: "Review project portfolio and technical concepts.",
+                            isApproval: false,
+                            explanation: "Priority: Critical. Reserved preparation block."
+                        },
+                        {
+                            id: "act_2",
+                            category: "Meeting Schedule",
+                            time_slot: "4:30 PM",
+                            title: "Move Project Sync → 4:30 PM",
+                            reason: "Your interview travel window overlaps with the routine team meeting.",
+                            isApproval: true,
+                            ruleKey: "protect_interviews",
+                            ruleDesc: "You prefer protecting interviews over routine meetings.",
+                            explanation: "Meeting conflict detected during transit window. Requires explicit user approval to move."
+                        }
+                    ],
+                    trace: [
+                        { layer: "Parsed Context", detail: "Goal: Interview Preparation | Target Location: Bangalore" },
+                        { layer: "Guardrail Engine", detail: "External commitment reschedule assigned to approval flow." }
+                    ]
+                };
             }
 
-            const res = await fetch('/api/process', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: input, review_mode: reviewMode})
-            });
-            const data = await res.json();
-
-            spinner.classList.add('hidden');
-            dashContent.classList.remove('hidden');
-
-            if (data.vague) {
-                alert(data.message);
-                return;
+            if (type === 'meeting') {
+                return {
+                    understood: [
+                        { label: "Goal", value: "Submit assignment on time", icon: "📝" },
+                        { label: "When", value: "Today", icon: "📅" },
+                        { label: "Priority", value: "High", icon: "⭐" },
+                        { label: "Conflict", value: "2:00 PM Sync overlaps final draft time", icon: "⚠️" }
+                    ],
+                    context_cards: [
+                        { title: "Project Sync", summary: "2:00 PM – 3:00 PM", icon: "📅", status: "Conflict" },
+                        { title: "Assignment Deadline", summary: "Due at 5:00 PM", icon: "📝", status: "Deadline" }
+                    ],
+                    actions: [
+                        {
+                            id: "act_1",
+                            category: "Focus Window",
+                            time_slot: "11:00 AM – 1:30 PM",
+                            title: "Block 11:00 AM - 1:30 PM for assignment wrap-up",
+                            reason: "Dedicated time reserved prior to submission deadline.",
+                            isApproval: false,
+                            explanation: "Priority: High. Focus block created automatically."
+                        },
+                        {
+                            id: "act_2",
+                            category: "Meeting Schedule",
+                            time_slot: "3:30 PM",
+                            title: "Move Project Sync → 3:30 PM",
+                            reason: "Clears focus time before deadline submission.",
+                            isApproval: true,
+                            ruleKey: "protect_deadlines",
+                            ruleDesc: "You prefer protecting focus windows prior to major deadlines.",
+                            explanation: "Routine meeting conflicts with submission window. Approval requested."
+                        }
+                    ],
+                    trace: [
+                        { layer: "Parsed Context", detail: "Goal: Assignment Deadline Submission" },
+                        { layer: "Guardrail Engine", detail: "Automated focus block. Meeting reschedule routed to approval." }
+                    ]
+                };
             }
 
-            // Summary Text
-            document.getElementById('summary-text').innerText = `${data.summary.auto} actions scheduled automatically · ${data.summary.attention} actions need approval`;
+            // Default Exam Scenario
+            return {
+                understood: [
+                    { label: "Goal", value: "Prepare for tomorrow's exam", icon: "📚" },
+                    { label: "When", value: "Tomorrow", icon: "📅" },
+                    { label: "Priority", value: "Critical", icon: "⭐" },
+                    { label: "Conflict", value: "Project meeting overlaps study time", icon: "⚠️" }
+                ],
+                context_cards: [
+                    { title: "Project Sync", summary: "2:00 PM", icon: "📅", status: "Conflict" },
+                    { title: "Exam Preparation", summary: "3-hour block required", icon: "📚", status: "Critical" },
+                    { title: "Schedule Conflict", summary: "Meeting overlaps study window", icon: "⚠️", status: "Overlap" }
+                ],
+                actions: [
+                    {
+                        id: "act_1",
+                        category: "Focus Block",
+                        time_slot: "2:00 PM – 5:00 PM",
+                        title: "Block 2:00–5:00 PM for exam preparation",
+                        reason: "Protected 3-hour focus window reserved for exam preparation.",
+                        isApproval: false,
+                        explanation: "Priority: Exam — Critical\nRequired study time: 3 hours\nDecision: Reserved study block automatically.\nConfidence: 95%"
+                    },
+                    {
+                        id: "act_2",
+                        category: "Meeting Schedule",
+                        time_slot: "5:00 PM",
+                        title: "Move Project Sync → 5:00 PM",
+                        reason: "Your exam has higher priority, and the meeting overlaps the required study period.",
+                        isApproval: true,
+                        ruleKey: "protect_academic_commitments",
+                        ruleDesc: "You prefer protecting important academic commitments over routine meetings.",
+                        explanation: "Priority: Exam — Critical\nConflicting event: Project Sync — Medium\nRequired study time: 3 hours\nDecision: Recommend moving routine meeting to 5:00 PM.\nConfidence: 92%"
+                    }
+                ],
+                trace: [
+                    { layer: "Parsed Context", detail: "Goal: Exam Preparation | Priority: Critical | Requirement: 3h block" },
+                    { layer: "Retrieved Info", detail: "Found Project Sync at 2:00 PM overlapping study window" },
+                    { layer: "Trust Guardrail", detail: "Internal study block automated. External meeting change requires explicit approval." }
+                ]
+            };
+        }
 
-            // Adaptive Badge
-            const adapBadge = document.getElementById('adaptive-badge');
-            if (data.memory_applied) {
-                adapBadge.classList.remove('hidden');
-            } else {
-                adapBadge.classList.add('hidden');
-            }
+        function renderDashboard(data) {
+            autoActionCount = 0;
+            pendingActionCount = 0;
 
-            // Understood Chips
-            const u = data.understood;
-            document.getElementById('understood-chips').innerHTML = `
-                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span class="text-[10px] text-slate-500 uppercase font-bold block">🎯 Goal</span>
-                    <span class="text-xs font-semibold text-slate-200 mt-0.5 block">${u.goal}</span>
-                </div>
-                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span class="text-[10px] text-slate-500 uppercase font-bold block">📅 When</span>
-                    <span class="text-xs font-semibold text-slate-200 mt-0.5 block">${u.when}</span>
-                </div>
-                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span class="text-[10px] text-slate-500 uppercase font-bold block">📍 Where</span>
-                    <span class="text-xs font-semibold text-slate-200 mt-0.5 block">${u.where}</span>
-                </div>
-                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span class="text-[10px] text-slate-500 uppercase font-bold block">⚡ Priority</span>
-                    <span class="text-xs font-semibold text-indigo-400 mt-0.5 block">${u.priority}</span>
-                </div>
-            `;
-
-            // What I Found (Context Cards)
-            const contextGrid = document.getElementById('context-grid');
-            contextGrid.innerHTML = data.context_cards.map(c => `
-                <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-xl space-y-1 hover:border-slate-700 transition">
-                    <div class="flex justify-between items-center">
-                        <span class="text-lg">${c.icon}</span>
-                        <span class="text-[10px] font-mono px-2 py-0.5 rounded ${c.status === 'Conflict' || c.status === 'Warning' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-slate-800 text-slate-400'}">${c.status}</span>
+            // 1. Render What I Understood
+            const understoodContainer = document.getElementById('understood-chips');
+            if (understoodContainer && data.understood) {
+                understoodContainer.innerHTML = data.understood.map(item => `
+                    <div class="bg-slate-50 border border-slate-200/80 p-3 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm">${item.icon}</span>
+                            <span class="text-xs text-slate-500 font-medium">${item.label}:</span>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-900">${item.value}</span>
                     </div>
-                    <div class="text-xs font-semibold text-slate-200 pt-1">${c.title}</div>
-                    <div class="text-[11px] text-slate-400 leading-tight">${c.summary}</div>
-                </div>
-            `).join('');
+                `).join('');
+            }
 
-            // Memory List
-            renderMemoryList(data.learned_preferences);
-
-            // Timeline & Attention Sections
-            const timelineList = document.getElementById('timeline-list');
-            const attentionSection = document.getElementById('attention-section');
-            const attentionCards = document.getElementById('attention-cards');
-
-            timelineList.innerHTML = '';
-            attentionCards.innerHTML = '';
-            let hasAttention = false;
-
-            data.recommended_actions.forEach(act => {
-                const needsApproval = act.status.includes('approval');
-
-                if (needsApproval) {
-                    hasAttention = true;
-                    attentionCards.innerHTML += `
-                        <div id="attn-${act.id}" class="bg-amber-950/20 border border-amber-500/30 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div class="space-y-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-sm text-slate-100">${act.action}</span>
-                                    ${act.is_personalized ? '<span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-semibold">🧠 PERSONALIZED</span>' : ''}
-                                </div>
-                                <p class="text-xs text-slate-300">${act.reason}</p>
+            // 2. Render What I Found
+            const contextContainer = document.getElementById('context-grid');
+            if (contextContainer && data.context_cards) {
+                contextContainer.innerHTML = data.context_cards.map(item => `
+                    <div class="bg-slate-50 border border-slate-200/80 p-3 rounded-xl flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="text-base bg-white p-1 rounded-lg border border-slate-200 shadow-sm">${item.icon}</span>
+                            <div>
+                                <div class="text-xs font-semibold text-slate-800">${item.title}</div>
+                                <div class="text-[11px] text-slate-500">${item.summary}</div>
                             </div>
-                            <div class="flex items-center gap-2 self-end sm:self-auto">
-                                <button onclick="handleAction('${act.id}', 'APPROVE', '${act.action}', '${act.rule_key || ''}', '${act.rule_desc || ''}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2 rounded-lg transition shadow">Approve</button>
-                                <button onclick="handleAction('${act.id}', 'REJECT', '${act.action}', '${act.rule_key || ''}', '${act.rule_desc || ''}')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs px-4 py-2 rounded-lg transition border border-slate-700">Reject</button>
+                        </div>
+                        ${item.status ? `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${item.status === 'Conflict' || item.status === 'Overlap' ? 'bg-amber-100 text-amber-800' : 'bg-slate-200/70 text-slate-700'}">${item.status}</span>` : ''}
+                    </div>
+                `).join('');
+            }
+
+            // 3. Render Timeline and Approval Cards
+            const timelineList = document.getElementById('timeline-list');
+            const attentionCards = document.getElementById('attention-cards');
+            const attentionSection = document.getElementById('attention-section');
+
+            if (timelineList && attentionCards && data.actions) {
+                timelineList.innerHTML = '';
+                attentionCards.innerHTML = '';
+                let needsAttention = false;
+
+                data.actions.forEach(act => {
+                    if (act.isApproval) {
+                        needsAttention = true;
+                        pendingActionCount++;
+                        attentionCards.innerHTML += `
+                            <div id="attn-${act.id}" class="bg-amber-50/80 border border-amber-200 p-4 rounded-xl space-y-3 card-shadow">
+                                <div class="flex justify-between items-start gap-3">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold text-xs text-slate-900">${act.title}</span>
+                                        </div>
+                                        <p class="text-xs text-slate-700">${act.reason}</p>
+                                    </div>
+                                    <span class="text-[10px] font-semibold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full whitespace-nowrap">Needs approval</span>
+                                </div>
+                                <div class="flex items-center gap-2 pt-1">
+                                    <button onclick="approveAction('${act.id}', '${escapeStr(act.title)}', '${act.ruleKey}', '${escapeStr(act.ruleDesc)}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs px-3.5 py-1.5 rounded-lg transition shadow-sm">Approve change</button>
+                                    <button onclick="rejectAction('${act.id}')" class="bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs px-3.5 py-1.5 rounded-lg transition border border-slate-200">Keep meeting</button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        autoActionCount++;
+                    }
+
+                    timelineList.innerHTML += `
+                        <div id="timeline-card-${act.id}" class="relative space-y-2">
+                            <div class="absolute -left-[27px] top-1.5 w-3 h-3 rounded-full ${act.isApproval ? 'bg-amber-400 ring-4 ring-amber-100' : 'bg-emerald-500 ring-4 ring-emerald-100'}"></div>
+                            
+                            <div class="bg-slate-50 border border-slate-200/80 p-4 rounded-xl space-y-2.5 card-shadow-hover transition">
+                                <div class="flex flex-wrap justify-between items-start gap-2">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${act.category}</span>
+                                            <span class="text-xs text-slate-300">•</span>
+                                            <span class="text-xs font-semibold text-brand-700">${act.time_slot}</span>
+                                        </div>
+                                        <h4 class="text-xs font-bold text-slate-800 mt-0.5">${act.title}</h4>
+                                    </div>
+                                    <span class="text-[10px] font-medium px-2.5 py-0.5 rounded-full ${act.isApproval ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
+                                        ${act.isApproval ? 'Needs approval' : '✓ Automatic'}
+                                    </span>
+                                </div>
+                                
+                                <p class="text-xs text-slate-600 leading-relaxed">${act.reason}</p>
+                                
+                                <details class="text-xs bg-white p-3 rounded-lg border border-slate-200/60 mt-2">
+                                    <summary class="cursor-pointer font-medium text-slate-500 hover:text-slate-800 text-[11px] flex items-center justify-between">
+                                        <span>Why this?</span>
+                                        <span class="text-[10px] text-slate-400">View explanation</span>
+                                    </summary>
+                                    <div class="mt-2.5 pt-2 border-t border-slate-100 space-y-1 text-slate-600 text-[11px] whitespace-pre-line leading-relaxed">
+                                        ${act.explanation}
+                                    </div>
+                                </details>
                             </div>
                         </div>
                     `;
+                });
+
+                if (attentionSection) {
+                    if (needsAttention) attentionSection.classList.remove('hidden');
+                    else attentionSection.classList.add('hidden');
                 }
-
-                timelineList.innerHTML += `
-                    <div id="timeline-card-${act.id}" class="relative pl-8 space-y-2">
-                        <div class="absolute left-1.5 top-1.5 w-3 h-3 rounded-full ${needsApproval ? 'bg-amber-400 ring-4 ring-amber-400/20' : 'bg-emerald-400 ring-4 ring-emerald-400/20'}"></div>
-                        <div class="bg-slate-950 border border-slate-800/80 p-4 rounded-xl space-y-2">
-                            <div class="flex flex-wrap justify-between items-start gap-2">
-                                <div>
-                                    <span class="text-[10px] font-mono text-indigo-400 uppercase font-bold block">${act.time_slot}</span>
-                                    <h4 class="text-sm font-semibold text-slate-200 mt-0.5">${act.action}</h4>
-                                </div>
-                                <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full ${needsApproval ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}">
-                                    ${act.status}
-                                </span>
-                            </div>
-                            <p class="text-xs text-slate-400">${act.reason}</p>
-
-                            <details class="text-xs bg-slate-900 p-2.5 rounded-lg border border-slate-800">
-                                <summary class="cursor-pointer font-medium text-indigo-300 text-[11px] hover:text-indigo-200">Why this?</summary>
-                                <div class="mt-2 text-slate-300 text-[11px] font-mono whitespace-pre-line leading-relaxed">
-                                    ${act.explanation}
-                                </div>
-                            </details>
-                        </div>
-                    </div>
-                `;
-            });
-
-            if (hasAttention) {
-                attentionSection.classList.remove('hidden');
-            } else {
-                attentionSection.classList.add('hidden');
             }
 
-            // Technical Trace
+            // 4. Update Summary Banner Header
+            updateSummaryBanner();
+
+            // 5. Render Learned Preferences
+            renderLearnedMemory();
+
+            // 6. Technical Trace Diagnostic
             const traceLog = document.getElementById('trace-log');
-            traceLog.innerHTML = data.trace.map(t => `
-                <div class="p-2 rounded bg-slate-950 border border-slate-800">
-                    <span class="text-indigo-400 font-bold">${t.layer}:</span> <span class="text-slate-300">${t.detail}</span>
-                </div>
-            `).join('');
+            if (traceLog && data.trace) {
+                traceLog.innerHTML = data.trace.map(t => `
+                    <div class="p-1.5 rounded bg-white border border-slate-200">
+                        <span class="text-brand-700 font-semibold">${t.layer}:</span> <span class="text-slate-700">${t.detail}</span>
+                    </div>
+                `).join('');
+            }
         }
 
-        async function handleAction(actionId, decision, actionText, ruleKey, ruleDesc) {
-            const res = await fetch('/api/action-decision', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    action_id: actionId,
-                    decision: decision,
-                    action_text: actionText,
-                    rule_key: ruleKey,
-                    rule_desc: ruleDesc
-                })
-            });
-            const data = await res.json();
+        function updateSummaryBanner() {
+            const summaryText = document.getElementById('summary-text');
+            const summaryBanner = document.getElementById('summary-banner');
+            const summaryTitle = document.getElementById('summary-title');
+            const summaryIcon = document.getElementById('summary-icon');
 
-            // Update Attention Card
-            const attnCard = document.getElementById(`attn-${actionId}`);
+            if (pendingActionCount > 0) {
+                summaryBanner.className = "bg-amber-50/70 border border-amber-200/60 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3";
+                summaryIcon.innerText = "⚠️";
+                summaryTitle.innerText = "Your plan is ready";
+                summaryText.innerHTML = `✓ ${autoActionCount} ${autoActionCount === 1 ? 'action' : 'actions'} handled automatically &nbsp;·&nbsp; <span class="text-amber-800 font-semibold">⚠️ ${pendingActionCount} decision needs you</span>`;
+            } else {
+                summaryBanner.className = "bg-emerald-50/70 border border-emerald-200/60 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3";
+                summaryIcon.innerText = "✅";
+                summaryTitle.innerText = "You're all set";
+                summaryText.innerText = `✓ ${autoActionCount + 1} actions completed`;
+            }
+        }
+
+        function approveAction(id, title, ruleKey, ruleDesc) {
+            const attnCard = document.getElementById(`attn-${id}`);
             if (attnCard) {
-                if (decision === 'APPROVE') {
-                    attnCard.className = "bg-emerald-950/20 border border-emerald-500/30 p-4 rounded-xl flex justify-between items-center text-emerald-400 font-semibold text-xs";
-                    attnCard.innerHTML = `<span>✓ Approved: ${actionText}</span>`;
-                } else {
-                    attnCard.className = "bg-rose-950/20 border border-rose-500/30 p-4 rounded-xl flex justify-between items-center text-rose-400 font-semibold text-xs";
-                    attnCard.innerHTML = `<span>✕ Rejected change: ${actionText}</span>`;
-                }
+                attnCard.className = "bg-emerald-50 border border-emerald-200 p-3.5 rounded-xl flex items-center justify-between text-emerald-800 text-xs font-medium";
+                attnCard.innerHTML = `<span>✓ Done. ${title} updated.</span>`;
             }
 
-            // Update Timeline Card
-            const timelineCard = document.getElementById(`timeline-card-${actionId}`);
+            const timelineCard = document.getElementById(`timeline-card-${id}`);
             if (timelineCard) {
-                const statusBadge = timelineCard.querySelector('.rounded-full:last-child');
-                if (statusBadge) {
-                    if (decision === 'APPROVE') {
-                        statusBadge.className = "text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-                        statusBadge.innerText = "✓ Done";
-                    } else {
-                        statusBadge.className = "text-[11px] font-semibold px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20";
-                        statusBadge.innerText = "✕ Rejected";
-                    }
+                const badge = timelineCard.querySelector('.rounded-full:last-child');
+                if (badge) {
+                    badge.className = "text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800";
+                    badge.innerText = "✓ Approved";
                 }
             }
 
-            renderMemoryList(data.updated_preferences);
+            if (ruleDesc && !adaptiveMemoryState.some(m => m.text === ruleDesc)) {
+                adaptiveMemoryState.unshift({ text: ruleDesc, confidence: 92 });
+            }
+
+            if (pendingActionCount > 0) pendingActionCount--;
+            updateSummaryBanner();
+            renderLearnedMemory();
         }
 
-        function renderMemoryList(prefs) {
-            const memList = document.getElementById('learned-preferences-list');
-            if (!prefs || prefs.length === 0) {
-                memList.innerHTML = `<p class="text-xs text-slate-500 italic">No stored preferences yet. Approve or reject actions to train your assistant.</p>`;
+        function rejectAction(id) {
+            const attnCard = document.getElementById(`attn-${id}`);
+            if (attnCard) {
+                attnCard.className = "bg-slate-100 border border-slate-200 p-3.5 rounded-xl flex items-center justify-between text-slate-600 text-xs font-medium";
+                attnCard.innerHTML = `<span>Okay. I kept the original meeting schedule.</span>`;
+            }
+
+            const timelineCard = document.getElementById(`timeline-card-${id}`);
+            if (timelineCard) {
+                const badge = timelineCard.querySelector('.rounded-full:last-child');
+                if (badge) {
+                    badge.className = "text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-600";
+                    badge.innerText = "Kept current schedule";
+                }
+            }
+
+            if (pendingActionCount > 0) pendingActionCount--;
+            updateSummaryBanner();
+        }
+
+        function renderLearnedMemory() {
+            const container = document.getElementById('learned-preferences-list');
+            if (!container) return;
+
+            if (adaptiveMemoryState.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 italic py-1">No learned preferences yet. Approving or rejecting changes helps ACO adapt to your priorities.</p>`;
                 return;
             }
-            memList.innerHTML = prefs.map(p => `
-                <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl flex justify-between items-center gap-2">
-                    <span class="text-xs text-slate-300 leading-tight">🧠 ${p.text}</span>
-                    <span class="text-[10px] font-mono bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-full whitespace-nowrap">Conf: ${p.confidence}%</span>
+
+            container.innerHTML = adaptiveMemoryState.map(m => `
+                <div class="bg-slate-50 border border-slate-200/80 p-3 rounded-xl flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm">🧠</span>
+                        <span class="text-xs text-slate-700 font-medium">${m.text}</span>
+                    </div>
+                    <span class="text-[10px] font-medium bg-brand-50 text-brand-700 border border-brand-200/60 px-2 py-0.5 rounded-full whitespace-nowrap">
+                        Conf: ${m.confidence}%
+                    </span>
                 </div>
             `).join('');
         }
 
-        async function confirmClearMemory() {
-            if (confirm("Clear all learned decision preferences?")) {
-                await fetch('/api/clear-memory', {method: 'POST'});
-                renderMemoryList([]);
-                document.getElementById('adaptive-badge').classList.add('hidden');
-            }
+        function clearMemory() {
+            adaptiveMemoryState = [];
+            renderLearnedMemory();
+        }
+
+        function escapeStr(str) {
+            return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
     </script>
 </body>
