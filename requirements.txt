@@ -1,0 +1,10 @@
+# Web Framework & Server
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+
+# Data Validation & Parsing
+pydantic>=2.6.0
+
+# Optional: LLM integration (if connecting live model endpoints)
+openai>=1.14.0
+python-dotenv>=1.0.1
