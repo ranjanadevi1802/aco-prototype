@@ -850,4 +850,3 @@ User Behaviour ─┤
 
 [ACO — Adaptive Context Orchestrator Prototype](https://aco-prototype.vercel.app/)
 
-This version is deliberately aligned with the **actual uploaded `main.py` and `index.html`**, including the implemented intent categories, priority scores, adaptive memory/confidence mechanism, trust levels, action decisions, scenario flows, timeline, learned-memory UI, and technical reasoning trace.  
