@@ -1,10 +1,7 @@
-Yes — after checking the **actual `main.py` and `index.html` from your uploaded project**, the README should describe what ACO **actually implements**, rather than presenting it as a generic AI chatbot. Your code has a much stronger concept: **Intent → Context/Priority → Conflict → Memory → Decision → Trust → Action**, with user approval feeding back into adaptive memory. 
-
-Below is a more technical, hackathon-ready README with **complex architecture diagrams, implementation-specific tables, decision logic, metrics, and the actual UI/MVP features**.
 
 ---
 
-# 🧠 ACO — Adaptive Context Orchestrator
+# ACO — Adaptive Context Orchestrator
 
 > **A context-aware personal coordination assistant that understands intent, evaluates priorities and conflicts, learns user preferences, and recommends trustworthy actions.**
 
@@ -667,15 +664,10 @@ These are **implementation metrics**, not claims about real-world accuracy or us
 
 # 17. Team Roles
 
-| Team Member    | Role                         | Primary Responsibility                     | Deliverable                |
-| -------------- | ---------------------------- | ------------------------------------------ | -------------------------- |
-| **[Member 1]** | Team Lead / System Architect | Architecture, integration and coordination | Complete ACO system        |
-| **[Member 2]** | AI / Logic Developer         | Intent, priority and decision engines      | Reasoning pipeline         |
-| **[Member 3]** | Backend Developer            | FastAPI, memory and APIs                   | Backend services           |
-| **[Member 4]** | UI/UX Developer              | Interface, interaction and visualization   | Web interface              |
-| **[Member 5]** | Testing & Documentation      | Scenario testing, metrics and README       | Validation & documentation |
-
-*Replace the placeholders with your actual team members.*
+| Team Member | Role | Primary Responsibility | Deliverable |
+| ------------ | ---- | ---------------------- | ----------- |
+| **Ranjana Devi K** | Team Lead / AI & System Architect | Agentic AI architecture, system integration, intent analysis, priority logic, decision-making, and overall project coordination | Complete ACO Agentic AI system |
+| **Bhavani Prabu** | Backend / UI & Testing Developer | FastAPI backend, adaptive memory, API integration, frontend interface, testing, debugging, and documentation | Functional backend, web interface, and validated MVP |
 
 ---
 
@@ -856,6 +848,6 @@ User Behaviour ─┤
 
 ### Live MVP
 
-[ACO — Adaptive Context Orchestrator Prototype](https://aco-prototype.vercel.app/?utm_source=chatgpt.com)
+[ACO — Adaptive Context Orchestrator Prototype](https://aco-prototype.vercel.app/)
 
 This version is deliberately aligned with the **actual uploaded `main.py` and `index.html`**, including the implemented intent categories, priority scores, adaptive memory/confidence mechanism, trust levels, action decisions, scenario flows, timeline, learned-memory UI, and technical reasoning trace.  
